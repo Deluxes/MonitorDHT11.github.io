@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>NEXUS CLIMA | Estación Futurista</title>
+  <title>ESP32 CLIMA | Estación Meteorológica</title>
   <!-- Fuentes avanzadas y estilo futurista -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -70,7 +70,7 @@
       border-radius: 48px;
       padding: 2rem 2.5rem;
       width: 90%;
-      max-width: 650px;
+      max-width: 700px;
       margin: 2rem;
       box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.2), inset 0 1px 1px rgba(255,255,255,0.1);
       transition: all 0.4s ease;
@@ -255,14 +255,147 @@
       border-radius: 4px;
       opacity: 0.6;
     }
+
+    /* ----- ESTILOS PARA LA PESTAÑA DESPLEGABLE (REGISTRO) ----- */
+    .history-section {
+      margin: 2rem 0 1rem;
+    }
+
+    .history-toggle {
+      background: rgba(0, 15, 30, 0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      border-radius: 30px;
+      padding: 0.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .history-toggle[open] {
+      background: rgba(0, 20, 40, 0.7);
+      border-color: #0cf;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .history-toggle summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.8rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #c0e4ff;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 30px;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .history-toggle summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .history-toggle summary:hover {
+      background: rgba(0, 255, 255, 0.1);
+    }
+
+    .toggle-icon {
+      font-size: 1.5rem;
+      transition: transform 0.3s;
+    }
+
+    .history-toggle[open] .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .history-content {
+      padding: 1.2rem 0.5rem 1rem;
+      border-top: 1px solid rgba(0, 255, 255, 0.3);
+      max-height: 280px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #0cf #001a2f;
+    }
+
+    .history-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .history-content::-webkit-scrollbar-track {
+      background: #001a2f;
+      border-radius: 10px;
+    }
+    .history-content::-webkit-scrollbar-thumb {
+      background: #0cf;
+      border-radius: 10px;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      color: #bbddff;
+    }
+
+    .history-table th {
+      text-align: left;
+      padding: 0.5rem 0.8rem;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.4);
+      color: #7ec8ff;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+    }
+
+    .history-table td {
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px dashed rgba(100, 200, 255, 0.15);
+    }
+
+    .history-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .history-table tr:hover td {
+      background: rgba(0, 150, 255, 0.08);
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 1rem;
+      color: #5c7da0;
+      font-style: italic;
+    }
+
+    .loading-indicator {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 1rem;
+      color: #7ec8ff;
+    }
+
+    .badge-small {
+      font-size: 0.65rem;
+      background: #0a1a2a;
+      padding: 2px 8px;
+      border-radius: 20px;
+      color: #0cf;
+      border: 1px solid #0cf66;
+    }
   </style>
 </head>
 <body>
 
 <div class="glass-panel">
   <div class="title-section">
-    <div class="glitch-text">⟡ ESTACION REMOTA ⟡</div>
-    <div class="sub">EN LINEA // LATENCY ZERO</div>
+    <div class="glitch-text">⟡ DHT11 CLIMA ⟡</div>
+    <div class="sub">ESTACIÓN REMOTA // LATENCY ZERO</div>
     <div class="hologram-line"></div>
   </div>
 
@@ -290,6 +423,21 @@
     <span class="timestamp-futura" id="liveTimestamp">—</span>
   </div>
 
+  <!-- PESTAÑA DESPLEGABLE: REGISTRO FIREBASE -->
+  <div class="history-section">
+    <details class="history-toggle" id="historyDetails">
+      <summary>
+        <span>📋 REGISTRO DE LECTURAS</span>
+        <span class="toggle-icon">▼</span>
+      </summary>
+      <div class="history-content" id="historyContent">
+        <div class="loading-indicator">
+          <span>⏳ Cargando datos...</span>
+        </div>
+      </div>
+    </details>
+  </div>
+
   <div class="footer-note">
     <span>◈ SISTEMA INTEGRADO IOT ◈</span><br>
     <span>ESP32 FIREBASE | PROTOCOLO CUÁNTICO</span>
@@ -299,17 +447,19 @@
 <!-- Firebase SDK (modular v9+) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, onValue, query, limitToLast, orderByKey } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // Configuración de Firebase (usando la misma base de datos)
+  // Configuración de Firebase
   const firebaseConfig = {
     databaseURL: "https://climaescuela-default-rtdb.firebaseio.com"
   };
 
-  // Inicializar app
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const lecturasRef = query(ref(db, 'lecturas'), limitToLast(1));
+
+  // Referencias
+  const lecturasRef = query(ref(db, 'lecturas'), limitToLast(1));       // para el dato en vivo
+  const historialRef = query(ref(db, 'lecturas'), orderByKey(), limitToLast(20)); // últimos 20 registros
 
   // Elementos DOM
   const tempSpan = document.getElementById('temp');
@@ -317,12 +467,16 @@
   const tempCardDiv = document.getElementById('tempCard');
   const humCardDiv = document.getElementById('humCard');
   const timestampSpan = document.getElementById('liveTimestamp');
+  const historyContent = document.getElementById('historyContent');
 
-  // Función para añadir efecto "flash" de actualización (futurista)
+  // Variables de estado
+  let lastTemp = null;
+  let lastHum = null;
+
+  // Función para añadir efecto "flash" de actualización
   function addUpdateFlash(element, cardElement) {
     if (!element) return;
     element.classList.add('data-updated');
-    // También un sutil brillo en la tarjeta
     if (cardElement) {
       cardElement.style.transition = "box-shadow 0.1s";
       cardElement.style.boxShadow = "0 0 12px cyan, 0 0 4px magenta";
@@ -335,50 +489,93 @@
     }, 280);
   }
 
-  // Función para actualizar timestamp local (fecha/hora en formato ISO elegante)
+  // Actualizar reloj local
   function updateTimestamp() {
     const now = new Date();
     const formatted = now.toLocaleTimeString('es-ES', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
     timestampSpan.textContent = `⏱️ ${formatted}`;
   }
-  // actualizar cada segundo el reloj en la barra
   setInterval(updateTimestamp, 1000);
-  updateTimestamp(); // inicial
+  updateTimestamp();
 
-  // Últimos valores para evitar flashes innecesarios (si el valor no cambia realmente, igual no se fuerza efecto)
-  let lastTemp = null;
-  let lastHum = null;
+  // Formatear timestamp de Firebase (si es un número unix o string ISO)
+  function formatFirebaseTimestamp(key) {
+    // Intentar interpretar la key como timestamp numérico (milisegundos o segundos)
+    let date;
+    const keyNum = Number(key);
+    if (!isNaN(keyNum)) {
+      // Si el número es muy grande (milisegundos > 1e12) o pequeño (segundos < 1e10)
+      date = new Date(keyNum > 1e12 ? keyNum : keyNum * 1000);
+    } else {
+      // Intentar parsear como fecha ISO
+      date = new Date(key);
+    }
+    if (isNaN(date.getTime())) {
+      return key; // fallback
+    }
+    return date.toLocaleString('es-ES', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
 
-  // Escucha en tiempo real desde Firebase
+  // Renderizar la tabla de historial
+  function renderHistoryTable(snapshot) {
+    const dataArray = [];
+    snapshot.forEach((child) => {
+      const key = child.key;
+      const val = child.val();
+      if (val && typeof val.temperatura === 'number' && typeof val.humedad === 'number') {
+        dataArray.push({
+          key: key,
+          temp: val.temperatura.toFixed(1),
+          hum: val.humedad.toFixed(1),
+          timestampRaw: val.timestamp || key // por si tiene campo timestamp
+        });
+      }
+    });
+
+    // Ordenar por clave (más reciente primero) - asumiendo que las keys son timestamps
+    dataArray.sort((a, b) => (b.key > a.key ? 1 : -1));
+
+    if (dataArray.length === 0) {
+      historyContent.innerHTML = `<div class="history-empty">⚠️ No hay registros disponibles</div>`;
+      return;
+    }
+
+    let html = `
+      <table class="history-table">
+        <thead>
+          <tr><th>FECHA / HORA</th><th>TEMP (°C)</th><th>HUM (%)</th></tr>
+        </thead>
+        <tbody>
+    `;
+    dataArray.forEach(item => {
+      const formattedTime = formatFirebaseTimestamp(item.key);
+      html += `<tr><td>${formattedTime}</td><td>${item.temp}</td><td>${item.hum}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    historyContent.innerHTML = html;
+  }
+
+  // Escucha en tiempo real para el dato actual (último)
   onValue(lecturasRef, (snapshot) => {
-    // Usamos forEach porque limitToLast(1) pero podría venir una sola
     snapshot.forEach((childSnapshot) => {
       const data = childSnapshot.val();
-      // Validar que existan los campos
       if (data && typeof data.temperatura === 'number' && typeof data.humedad === 'number') {
         const newTemp = data.temperatura.toFixed(1);
         const newHum = data.humedad.toFixed(1);
 
-        // Verificar cambios para animación
         let tempChanged = (lastTemp !== newTemp);
         let humChanged = (lastHum !== newHum);
 
-        if (tempChanged) {
-          addUpdateFlash(tempSpan, tempCardDiv);
-        }
-        if (humChanged) {
-          addUpdateFlash(humSpan, humCardDiv);
-        }
+        if (tempChanged) addUpdateFlash(tempSpan, tempCardDiv);
+        if (humChanged) addUpdateFlash(humSpan, humCardDiv);
 
-        // Actualizar valores en DOM
         tempSpan.textContent = newTemp;
         humSpan.textContent = newHum;
 
-        // Guardar último estado
         lastTemp = newTemp;
         lastHum = newHum;
 
-        // Efecto secundario: si la temperatura supera cierto umbral (ejemplo 35°) podemos cambiar el color de la tarjeta temporalmente? futurista extra
+        // Efectos por umbrales
         const tempNum = parseFloat(newTemp);
         if (tempNum > 35.0) {
           tempCardDiv.style.borderColor = "#ff3366";
@@ -388,7 +585,6 @@
           tempCardDiv.style.boxShadow = "0 0 12px rgba(51, 204, 255, 0.5)";
         } else {
           tempCardDiv.style.borderColor = "rgba(0, 255, 255, 0.3)";
-          // No sobreescribir sombra base pero mantiene
         }
 
         const humNum = parseFloat(newHum);
@@ -402,7 +598,6 @@
           humCardDiv.style.borderColor = "rgba(0, 255, 255, 0.3)";
         }
       } else {
-        // Si los datos no tienen estructura esperada, mostrar fallback elegante
         if (tempSpan.textContent === "--") {
           tempSpan.textContent = "ERR";
           humSpan.textContent = "ERR";
@@ -410,8 +605,7 @@
       }
     });
   }, (error) => {
-    // Manejo de error de conexión (futurista: mostrar mensaje en barra)
-    console.warn("Error en conexión con Firebase:", error);
+    console.warn("Error en conexión Firebase (live):", error);
     const badgeSpan = document.querySelector('.live-badge span');
     if (badgeSpan) {
       badgeSpan.innerHTML = "⚠️ SIN SEÑAL | MODO OFFLINE";
@@ -420,9 +614,16 @@
     timestampSpan.textContent = "⌛ DESCONECTADO";
   });
 
-  // Opcional: efecto de carga inicial con mensaje sutil
+  // Escucha para el historial (se actualiza cuando hay cambios en los últimos 20)
+  onValue(historialRef, (snapshot) => {
+    renderHistoryTable(snapshot);
+  }, (error) => {
+    console.warn("Error cargando historial:", error);
+    historyContent.innerHTML = `<div class="history-empty">🔌 Error al cargar el historial</div>`;
+  });
+
+  // Efecto de carga inicial
   window.addEventListener('load', () => {
-    // Pequeño efecto de aparición para la UI
     const panel = document.querySelector('.glass-panel');
     panel.style.opacity = "0";
     panel.style.transform = "scale(0.98)";
