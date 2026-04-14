@@ -440,7 +440,7 @@
 
   <div class="footer-note">
     <span>◈ SISTEMA INTEGRADO IOT ◈</span><br>
-    <span>ESP32 FIREBASE | PROTOCOLO CUÁNTICO</span>
+    <span>NEXUS FIREBASE | PROTOCOLO CUÁNTICO</span>
   </div>
 </div>
 
@@ -498,22 +498,37 @@
   setInterval(updateTimestamp, 1000);
   updateTimestamp();
 
-  // Formatear timestamp de Firebase (si es un número unix o string ISO)
-  function formatFirebaseTimestamp(key) {
-    // Intentar interpretar la key como timestamp numérico (milisegundos o segundos)
-    let date;
+  // Función mejorada para formatear fecha/hora desde el registro
+  function formatFirebaseTimestamp(item) {
+    // item = { key, val }
+    const data = item.val;
+    const key = item.key;
+
+    // Prioridad 1: campo 'timestamp' dentro del objeto (puede ser string ISO o número)
+    if (data && data.timestamp) {
+      const ts = data.timestamp;
+      let date;
+      if (typeof ts === 'string') {
+        date = new Date(ts);
+      } else if (typeof ts === 'number') {
+        date = new Date(ts > 1e12 ? ts : ts * 1000);
+      }
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleString('es-ES', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
+    }
+
+    // Prioridad 2: interpretar la clave como timestamp
     const keyNum = Number(key);
     if (!isNaN(keyNum)) {
-      // Si el número es muy grande (milisegundos > 1e12) o pequeño (segundos < 1e10)
-      date = new Date(keyNum > 1e12 ? keyNum : keyNum * 1000);
-    } else {
-      // Intentar parsear como fecha ISO
-      date = new Date(key);
+      const date = new Date(keyNum > 1e12 ? keyNum : keyNum * 1000);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleString('es-ES', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
     }
-    if (isNaN(date.getTime())) {
-      return key; // fallback
-    }
-    return date.toLocaleString('es-ES', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    // Fallback: mostrar la clave tal cual si no se pudo parsear
+    return key;
   }
 
   // Renderizar la tabla de historial
@@ -525,9 +540,9 @@
       if (val && typeof val.temperatura === 'number' && typeof val.humedad === 'number') {
         dataArray.push({
           key: key,
+          val: val,
           temp: val.temperatura.toFixed(1),
-          hum: val.humedad.toFixed(1),
-          timestampRaw: val.timestamp || key // por si tiene campo timestamp
+          hum: val.humedad.toFixed(1)
         });
       }
     });
@@ -548,7 +563,7 @@
         <tbody>
     `;
     dataArray.forEach(item => {
-      const formattedTime = formatFirebaseTimestamp(item.key);
+      const formattedTime = formatFirebaseTimestamp({ key: item.key, val: item.val });
       html += `<tr><td>${formattedTime}</td><td>${item.temp}</td><td>${item.hum}</td></tr>`;
     });
     html += `</tbody></table>`;
