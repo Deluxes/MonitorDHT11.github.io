@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>NEXUS CLIMA | Estación Futurista</title>
+  <!-- Fuentes avanzadas y estilo futurista -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 30%, #050914, #010101);
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      color: #eef5ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Fondo de rejilla holográfica animada */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+      animation: gridPulse 8s infinite alternate;
+    }
+
+    @keyframes gridPulse {
+      0% { opacity: 0.3; background-size: 40px 40px; }
+      100% { opacity: 0.8; background-size: 44px 44px; }
+    }
+
+    /* Partículas de fondo estilo "cyber dust" */
+    body::after {
+      content: "";
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(2px 2px at 20% 40%, rgba(0, 255, 255, 0.2), transparent),
+                  radial-gradient(3px 3px at 80% 70%, rgba(150, 0, 255, 0.15), transparent);
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* contenedor principal con efecto vidrio futurista */
+    .glass-panel {
+      position: relative;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+      background: rgba(8, 12, 25, 0.55);
+      border: 1px solid rgba(0, 255, 255, 0.35);
+      border-radius: 48px;
+      padding: 2rem 2.5rem;
+      width: 90%;
+      max-width: 650px;
+      margin: 2rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.2), inset 0 1px 1px rgba(255,255,255,0.1);
+      transition: all 0.4s ease;
+    }
+
+    .glass-panel:hover {
+      border-color: rgba(0, 255, 255, 0.7);
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 230, 255, 0.4);
+    }
+
+    /* cabecera con destellos */
+    .title-section {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .glitch-text {
+      font-size: 2.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #aaffff, #2a7fff, #aa2eff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 5px rgba(0,255,255,0.3);
+      animation: textFlicker 3s infinite alternate;
+    }
+
+    @keyframes textFlicker {
+      0% { opacity: 0.95; text-shadow: 0 0 2px cyan; }
+      100% { opacity: 1; text-shadow: 0 0 12px cyan, 0 0 5px blue; }
+    }
+
+    .sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      color: #8aaaff;
+      border-top: 1px dashed rgba(0, 255, 255, 0.4);
+      display: inline-block;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    /* medidores futuristas */
+    .sensor-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2.5rem 0 1.8rem;
+    }
+
+    .sensor-card {
+      background: rgba(0, 5, 15, 0.6);
+      backdrop-filter: blur(4px);
+      border-radius: 32px;
+      padding: 1.6rem 2rem;
+      flex: 1;
+      min-width: 180px;
+      text-align: center;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      transition: transform 0.2s ease, border-color 0.2s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .sensor-card:hover {
+      transform: translateY(-6px);
+      border-color: #0cf;
+      box-shadow: 0 0 18px rgba(0, 204, 255, 0.3);
+    }
+
+    .sensor-icon {
+      font-size: 2.8rem;
+      filter: drop-shadow(0 0 6px cyan);
+      margin-bottom: 0.8rem;
+    }
+
+    .sensor-label {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 300;
+      color: #bbddff;
+      margin-bottom: 0.8rem;
+    }
+
+    .value {
+      font-family: 'Space Mono', monospace;
+      font-size: 4rem;
+      font-weight: 700;
+      background: linear-gradient(145deg, #ffffff, #8dd0ff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 8px rgba(0,200,255,0.4);
+      line-height: 1;
+    }
+
+    .unit {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #7ec8ff;
+      margin-left: 4px;
+    }
+
+    /* barra de estado / indicador de datos en vivo */
+    .live-badge {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 1.8rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.6rem 1.2rem;
+      border-radius: 60px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid rgba(0, 255, 255, 0.5);
+    }
+
+    .pulse-dot {
+      width: 12px;
+      height: 12px;
+      background-color: #0f9;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #0f9;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1.2); background-color: #0ff; box-shadow: 0 0 12px cyan; }
+    }
+
+    .timestamp-futura {
+      font-size: 0.7rem;
+      color: #7f9fcf;
+    }
+
+    /* efecto de datos actualizados */
+    .data-updated {
+      animation: glitchFlash 0.2s ease-in-out;
+    }
+
+    @keyframes glitchFlash {
+      0% { text-shadow: 0 0 0 cyan; opacity: 1; }
+      50% { text-shadow: 2px 0 5px cyan, -2px 0 5px magenta; opacity: 0.9; }
+      100% { text-shadow: 0 0 0 cyan; }
+    }
+
+    /* footer futurista */
+    .footer-note {
+      margin-top: 2rem;
+      font-size: 0.7rem;
+      text-align: center;
+      color: #5c7da0;
+      border-top: 1px dashed rgba(100, 150, 255, 0.3);
+      padding-top: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    /* Adaptación móvil */
+    @media (max-width: 550px) {
+      .glass-panel { padding: 1.5rem; }
+      .value { font-size: 2.8rem; }
+      .glitch-text { font-size: 1.8rem; }
+      .sensor-card { padding: 1rem 1.2rem; min-width: 140px; }
+    }
+
+    /* Línea decorativa */
+    .hologram-line {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, cyan, magenta, transparent);
+      width: 80%;
+      margin: 1rem auto 0;
+      border-radius: 4px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="glass-panel">
+  <div class="title-section">
+    <div class="glitch-text">⟡ NEXUS CLIMA ⟡</div>
+    <div class="sub">ESTACIÓN REMOTA // LATENCY ZERO</div>
+    <div class="hologram-line"></div>
+  </div>
+
+  <div class="sensor-grid">
+    <!-- Tarjeta Temperatura -->
+    <div class="sensor-card" id="tempCard">
+      <div class="sensor-icon">🌡️</div>
+      <div class="sensor-label">TEMP. TERMINAL</div>
+      <div><span class="value" id="temp">--</span><span class="unit">°C</span></div>
+      <div style="font-size: 0.7rem; margin-top: 8px; letter-spacing: 1px;">RANGO CRÍTICO</div>
+    </div>
+
+    <!-- Tarjeta Humedad -->
+    <div class="sensor-card" id="humCard">
+      <div class="sensor-icon">💧</div>
+      <div class="sensor-label">HUMEDAD ATM.</div>
+      <div><span class="value" id="hum">--</span><span class="unit">% RH</span></div>
+      <div style="font-size: 0.7rem; margin-top: 8px; letter-spacing: 1px;">NIVEL HIDROMÉTRICO</div>
+    </div>
+  </div>
+
+  <div class="live-badge">
+    <div class="pulse-dot"></div>
+    <span>🔗 SYNC ACTIVA | DATOS EN VIVO</span>
+    <span class="timestamp-futura" id="liveTimestamp">—</span>
+  </div>
+
+  <div class="footer-note">
+    <span>◈ SISTEMA INTEGRADO IOT ◈</span><br>
+    <span>NEXUS FIREBASE | PROTOCOLO CUÁNTICO</span>
+  </div>
+</div>
+
+<!-- Firebase SDK (modular v9+) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  // Configuración de Firebase (usando la misma base de datos)
+  const firebaseConfig = {
+    databaseURL: "https://climaescuela-default-rtdb.firebaseio.com"
+  };
+
+  // Inicializar app
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const lecturasRef = query(ref(db, 'lecturas'), limitToLast(1));
+
+  // Elementos DOM
+  const tempSpan = document.getElementById('temp');
+  const humSpan = document.getElementById('hum');
+  const tempCardDiv = document.getElementById('tempCard');
+  const humCardDiv = document.getElementById('humCard');
+  const timestampSpan = document.getElementById('liveTimestamp');
+
+  // Función para añadir efecto "flash" de actualización (futurista)
+  function addUpdateFlash(element, cardElement) {
+    if (!element) return;
+    element.classList.add('data-updated');
+    // También un sutil brillo en la tarjeta
+    if (cardElement) {
+      cardElement.style.transition = "box-shadow 0.1s";
+      cardElement.style.boxShadow = "0 0 12px cyan, 0 0 4px magenta";
+      setTimeout(() => {
+        cardElement.style.boxShadow = "";
+      }, 250);
+    }
+    setTimeout(() => {
+      element.classList.remove('data-updated');
+    }, 280);
+  }
+
+  // Función para actualizar timestamp local (fecha/hora en formato ISO elegante)
+  function updateTimestamp() {
+    const now = new Date();
+    const formatted = now.toLocaleTimeString('es-ES', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    timestampSpan.textContent = `⏱️ ${formatted}`;
+  }
+  // actualizar cada segundo el reloj en la barra
+  setInterval(updateTimestamp, 1000);
+  updateTimestamp(); // inicial
+
+  // Últimos valores para evitar flashes innecesarios (si el valor no cambia realmente, igual no se fuerza efecto)
+  let lastTemp = null;
+  let lastHum = null;
+
+  // Escucha en tiempo real desde Firebase
+  onValue(lecturasRef, (snapshot) => {
+    // Usamos forEach porque limitToLast(1) pero podría venir una sola
+    snapshot.forEach((childSnapshot) => {
+      const data = childSnapshot.val();
+      // Validar que existan los campos
+      if (data && typeof data.temperatura === 'number' && typeof data.humedad === 'number') {
+        const newTemp = data.temperatura.toFixed(1);
+        const newHum = data.humedad.toFixed(1);
+
+        // Verificar cambios para animación
+        let tempChanged = (lastTemp !== newTemp);
+        let humChanged = (lastHum !== newHum);
+
+        if (tempChanged) {
+          addUpdateFlash(tempSpan, tempCardDiv);
+        }
+        if (humChanged) {
+          addUpdateFlash(humSpan, humCardDiv);
+        }
+
+        // Actualizar valores en DOM
+        tempSpan.textContent = newTemp;
+        humSpan.textContent = newHum;
+
+        // Guardar último estado
+        lastTemp = newTemp;
+        lastHum = newHum;
+
+        // Efecto secundario: si la temperatura supera cierto umbral (ejemplo 35°) podemos cambiar el color de la tarjeta temporalmente? futurista extra
+        const tempNum = parseFloat(newTemp);
+        if (tempNum > 35.0) {
+          tempCardDiv.style.borderColor = "#ff3366";
+          tempCardDiv.style.boxShadow = "0 0 15px rgba(255, 51, 102, 0.4)";
+        } else if (tempNum < 5.0) {
+          tempCardDiv.style.borderColor = "#33ccff";
+          tempCardDiv.style.boxShadow = "0 0 12px rgba(51, 204, 255, 0.5)";
+        } else {
+          tempCardDiv.style.borderColor = "rgba(0, 255, 255, 0.3)";
+          // No sobreescribir sombra base pero mantiene
+        }
+
+        const humNum = parseFloat(newHum);
+        if (humNum > 75) {
+          humCardDiv.style.borderColor = "#00e6b8";
+          humCardDiv.style.boxShadow = "0 0 12px #00ffc3";
+        } else if (humNum < 25) {
+          humCardDiv.style.borderColor = "#ffaa44";
+          humCardDiv.style.boxShadow = "0 0 10px #ffaa44";
+        } else {
+          humCardDiv.style.borderColor = "rgba(0, 255, 255, 0.3)";
+        }
+      } else {
+        // Si los datos no tienen estructura esperada, mostrar fallback elegante
+        if (tempSpan.textContent === "--") {
+          tempSpan.textContent = "ERR";
+          humSpan.textContent = "ERR";
+        }
+      }
+    });
+  }, (error) => {
+    // Manejo de error de conexión (futurista: mostrar mensaje en barra)
+    console.warn("Error en conexión con Firebase:", error);
+    const badgeSpan = document.querySelector('.live-badge span');
+    if (badgeSpan) {
+      badgeSpan.innerHTML = "⚠️ SIN SEÑAL | MODO OFFLINE";
+      document.querySelector('.pulse-dot')?.style.setProperty('background-color', '#ff3366');
+    }
+    timestampSpan.textContent = "⌛ DESCONECTADO";
+  });
+
+  // Opcional: efecto de carga inicial con mensaje sutil
+  window.addEventListener('load', () => {
+    // Pequeño efecto de aparición para la UI
+    const panel = document.querySelector('.glass-panel');
+    panel.style.opacity = "0";
+    panel.style.transform = "scale(0.98)";
+    setTimeout(() => {
+      panel.style.transition = "opacity 0.5s ease, transform 0.3s ease";
+      panel.style.opacity = "1";
+      panel.style.transform = "scale(1)";
+    }, 50);
+  });
+</script>
+</body>
+</html>
